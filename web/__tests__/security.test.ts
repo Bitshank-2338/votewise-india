@@ -1,10 +1,10 @@
 import { rateLimit, getClientIP } from "../lib/rate-limit";
-import { sanitize } from "../lib/sanitize";
+import { sanitizeInput, validateChatMessage } from "../lib/sanitize";
 
 describe("Security and Validation Tests", () => {
   it("should sanitize malicious HTML from strings", () => {
     const malicious = "<script>alert('xss')</script>Hello";
-    const safe = sanitize(malicious);
+    const safe = sanitizeInput(malicious);
     if (safe.includes("<script>")) {
       throw new Error("Sanitization failed!");
     }
