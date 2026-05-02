@@ -12,16 +12,16 @@ VoteWise India is a multilingual, AI-powered election assistant designed to educ
 ## 📸 Dashboard Preview
 
 ### 🏠 Home Page
-![Home Page](/screenshots/home.png)
+![Home Page](screenshots/home.png)
 
 ### 🤖 AI Chat Assistant (Hindi Example)
-![AI Chat](/screenshots/chat.png)
+![AI Chat](screenshots/chat.png)
 
 ### 📰 Live News Feed
-![News Feed](/screenshots/news.png)
+![News Feed](screenshots/news.png)
 
 ### 🛠️ Interactive Voter Tools
-![Voter Tools](/screenshots/tools.png)
+![Voter Tools](screenshots/tools.png)
 
 ## 🚀 Tech Stack
 
