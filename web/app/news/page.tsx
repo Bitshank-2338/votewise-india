@@ -50,9 +50,9 @@ export default function NewsPage() {
         <div className="divider"></div>
       </div>
 
-      <div className="filter-bar">
+      <div className="filter-bar" role="tablist" aria-label="News Categories">
         {categories.map((cat) => (
-          <button key={cat.key} className={`filter-chip ${activeFilter === cat.key ? "active" : ""}`} onClick={() => setActiveFilter(cat.key)}>
+          <button key={cat.key} className={`filter-chip ${activeFilter === cat.key ? "active" : ""}`} onClick={() => setActiveFilter(cat.key)} aria-pressed={activeFilter === cat.key} role="tab">
             {cat.label}
           </button>
         ))}
@@ -83,7 +83,7 @@ export default function NewsPage() {
             <a key={i} href={article.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "inherit" }}>
               <div className="news-card">
                 {article.image ? (
-                  <img className="news-card-img" src={article.image} alt={article.title} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                  <img className="news-card-img" src={article.image} alt={article.title} loading="lazy" decoding="async" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                 ) : (
                   <div className="news-card-img" style={{ display: "flex", alignItems: "center", justifyContent: "center", fontSize: "3rem", background: "var(--gradient-card)" }}>🗳️</div>
                 )}

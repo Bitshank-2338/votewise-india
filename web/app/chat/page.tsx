@@ -247,10 +247,10 @@ export default function ChatPage() {
       )}
 
       {/* Messages */}
-      <div className="chat-messages">
+      <div className="chat-messages" aria-live="polite" aria-atomic="false">
         {messages.map((msg, i) => (
           <div key={i} className={`chat-message ${msg.role}`}>
-            <div className="chat-avatar">
+            <div className="chat-avatar" aria-hidden="true">
               {msg.role === "assistant" ? "🗳️" : "👤"}
             </div>
             <div className="chat-bubble">
@@ -267,8 +267,8 @@ export default function ChatPage() {
         ))}
 
         {loading && (
-          <div className="chat-message assistant">
-            <div className="chat-avatar">🗳️</div>
+          <div className="chat-message assistant" aria-busy="true">
+            <div className="chat-avatar" aria-hidden="true">🗳️</div>
             <div className="chat-bubble">
               <div className="typing-indicator">
                 <span></span>
