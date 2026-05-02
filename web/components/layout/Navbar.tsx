@@ -27,10 +27,10 @@ export function Navbar() {
   return (
     <nav className="navbar">
       <Link href="/" className="navbar-logo">
-        <span className="flag">
-          <span className="saffron">●</span>
-          <span style={{ color: "white" }}>●</span>
-          <span className="green">●</span>
+        <span className="flag" style={{ display: 'inline-flex', gap: '2px', alignItems: 'center' }}>
+          <span style={{ color: '#FF9933', fontSize: '1.2rem', lineHeight: 1 }}>●</span>
+          <span style={{ color: '#FFFFFF', fontSize: '1.2rem', lineHeight: 1 }}>●</span>
+          <span style={{ color: '#138808', fontSize: '1.2rem', lineHeight: 1 }}>●</span>
         </span>
         VoteWise
       </Link>
