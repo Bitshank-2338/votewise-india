@@ -103,6 +103,13 @@ export default function HomePage() {
                 <p>{t.feat_tools_desc}</p>
               </div>
             </Link>
+            <Link href="/fact-check" style={{ textDecoration: "none", color: "inherit" }}>
+              <div className="feature-card">
+                <div className="icon">🛡️</div>
+                <h3>{t.feat_fc_title || "Fact Checker"}</h3>
+                <p>{t.feat_fc_desc || "Instantly verify political claims and combat fake news."}</p>
+              </div>
+            </Link>
           </div>
         </div>
       </section>

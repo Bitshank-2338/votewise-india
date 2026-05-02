@@ -19,6 +19,7 @@ export function Navbar() {
     { href: "/chat", label: t.nav_ask_ai },
     { href: "/tools", label: t.nav_tools },
     { href: "/news", label: t.nav_news },
+    { href: "/fact-check", label: t.nav_factcheck || "Fact Check" },
     { href: "/timeline", label: t.nav_timeline },
   ];
 

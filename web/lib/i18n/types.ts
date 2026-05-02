@@ -142,4 +142,14 @@ export interface Translations {
   ticker_2: string;
   ticker_3: string;
   ticker_4: string;
+
+  // Fact-Check (Optional for non-primary langs)
+  nav_factcheck?: string;
+  fc_title?: string;
+  fc_subtitle?: string;
+  fc_placeholder?: string;
+  fc_btn?: string;
+  fc_disclaimer?: string;
+  feat_fc_title?: string;
+  feat_fc_desc?: string;
 }
