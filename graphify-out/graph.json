@@ -1,0 +1,75 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "label": "index.ts",
+      "file_type": "code",
+      "source_file": "context\\index.ts",
+      "source_location": "L1",
+      "id": "context_index_ts",
+      "community": 0,
+      "norm_label": "index.ts"
+    },
+    {
+      "label": "getRedisClient()",
+      "file_type": "code",
+      "source_file": "context\\index.ts",
+      "source_location": "L20",
+      "id": "context_index_getredisclient",
+      "community": 0,
+      "norm_label": "getredisclient()"
+    },
+    {
+      "label": "index.ts",
+      "file_type": "code",
+      "source_file": "localization\\index.ts",
+      "source_location": "L1",
+      "id": "localization_index_ts",
+      "community": 2,
+      "norm_label": "index.ts"
+    },
+    {
+      "label": "index.ts",
+      "file_type": "code",
+      "source_file": "rag\\index.ts",
+      "source_location": "L1",
+      "id": "rag_index_ts",
+      "community": 1,
+      "norm_label": "index.ts"
+    },
+    {
+      "label": "generateEmbedding()",
+      "file_type": "code",
+      "source_file": "rag\\index.ts",
+      "source_location": "L19",
+      "id": "rag_index_generateembedding",
+      "community": 1,
+      "norm_label": "generateembedding()"
+    }
+  ],
+  "links": [
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "context\\index.ts",
+      "source_location": "L20",
+      "weight": 1.0,
+      "source": "context_index_ts",
+      "target": "context_index_getredisclient",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "rag\\index.ts",
+      "source_location": "L19",
+      "weight": 1.0,
+      "source": "rag_index_ts",
+      "target": "rag_index_generateembedding",
+      "confidence_score": 1.0
+    }
+  ],
+  "hyperedges": []
+}

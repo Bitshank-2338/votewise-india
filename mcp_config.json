@@ -1,0 +1,33 @@
+{
+  "mcpServers": {
+    "election-localization": {
+      "command": "npx",
+      "args": ["ts-node", "c:/projects/hackathons/promptswar/election/src/localization/index.ts"],
+      "env": {
+        "GOOGLE_CIVIC_API_KEY": "your_google_civic_api_key_here"
+      }
+    },
+    "election-rag": {
+      "command": "npx",
+      "args": ["ts-node", "c:/projects/hackathons/promptswar/election/src/rag/index.ts"],
+      "env": {
+        "DATABASE_URL": "postgres://user:password@localhost:5432/election_db"
+      }
+    },
+    "election-context": {
+      "command": "npx",
+      "args": ["ts-node", "c:/projects/hackathons/promptswar/election/src/context/index.ts"],
+      "env": {
+        "REDIS_URL": "redis://localhost:6379"
+      }
+    },
+    "graphify": {
+      "command": "C:/Users/shash/AppData/Local/Python/pythoncore-3.14-64/python.exe",
+      "args": [
+        "-m",
+        "graphify.serve",
+        "c:/projects/hackathons/promptswar/election/graphify-out/graph.json"
+      ]
+    }
+  }
+}
