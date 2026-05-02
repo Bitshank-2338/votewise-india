@@ -12,19 +12,25 @@ export async function GET(req: NextRequest) {
       { status: 429, headers: { "Retry-After": String(Math.ceil(resetIn / 1000)) } }
     );
 
-  // Strategy: try real APIs first, fall back to curated articles with generated images
-  let articles = await tryGNews();
-  if (!articles.length) articles = await tryNewsDataIO();
-  if (!articles.length) articles = getFallbackNews();
+  const category = req.nextUrl.searchParams.get("category") || "all";
+
+  // Strategy: try real APIs first, fall back to curated articles
+  let articles = await tryGNews(category);
+  if (!articles.length) articles = await tryNewsDataIO(category);
+  if (!articles.length) articles = getFallbackNews(category);
 
   return Response.json({ articles });
 }
 
 /** GNews.io — free tier, no key needed for basic access, returns images */
-async function tryGNews(): Promise<Article[]> {
+async function tryGNews(category: string): Promise<Article[]> {
   try {
+    let q = "india AND (election OR voting OR ECI)";
+    if (category !== "all" && category !== "politics") {
+      q = `india AND ${category}`;
+    }
     const res = await fetch(
-      "https://gnews.io/api/v4/search?q=india+election+OR+voting+OR+ECI&lang=en&country=in&max=12&apikey=" +
+      `https://gnews.io/api/v4/search?q=${encodeURIComponent(q)}&lang=en&country=in&max=12&apikey=` +
         (process.env.GNEWS_API_KEY || ""),
       { next: { revalidate: 600 } }
     );
@@ -40,7 +46,7 @@ async function tryGNews(): Promise<Article[]> {
         image: a.image,
         source: a.source?.name || "News",
         date: a.publishedAt || new Date().toISOString(),
-        category: "politics",
+        category: category === "all" ? "politics" : category,
       }));
   } catch {
     return [];
@@ -48,12 +54,13 @@ async function tryGNews(): Promise<Article[]> {
 }
 
 /** NewsData.io — user's existing key */
-async function tryNewsDataIO(): Promise<Article[]> {
+async function tryNewsDataIO(category: string): Promise<Article[]> {
   const apiKey = process.env.NEWSDATA_API_KEY;
   if (!apiKey) return [];
   try {
+    let catParam = category === "all" ? "politics,top" : category;
     const res = await fetch(
-      `https://newsdata.io/api/1/latest?apikey=${apiKey}&country=in&category=politics&language=en&image=1&q=election OR voting OR ECI`,
+      `https://newsdata.io/api/1/latest?apikey=${apiKey}&country=in&category=${catParam}&language=en&image=1`,
       { next: { revalidate: 300 } }
     );
     const data = await res.json();
@@ -68,7 +75,7 @@ async function tryNewsDataIO(): Promise<Article[]> {
         image: a.image_url,
         source: sanitize(a.source_name || "News"),
         date: a.pubDate || new Date().toISOString(),
-        category: (a.category || ["politics"])[0] || "politics",
+        category: (a.category || [category])[0] || category,
       }));
   } catch {
     return [];
@@ -76,9 +83,9 @@ async function tryNewsDataIO(): Promise<Article[]> {
 }
 
 /** Fallback with locally generated images when no API key is configured */
-function getFallbackNews(): Article[] {
+function getFallbackNews(category: string): Article[] {
   const now = new Date().toISOString();
-  return [
+  const allNews = [
     { title: "Election Commission Announces Schedule for Upcoming State Assembly Elections", description: "The ECI has released the full schedule including nomination dates, polling dates, and counting day for the upcoming state elections. All political parties have been notified.", url: "https://eci.gov.in", image: "/news/parliament.png", source: "Election Commission of India", date: now, category: "politics" },
     { title: "Voter Registration Drive: Over 1.5 Crore New Voters Added", description: "The National Voters' Service Portal reports a significant surge in new voter registrations ahead of the election season. Youth participation has increased by 25%.", url: "https://nvsp.in", image: "/news/voters-queue.png", source: "NVSP", date: now, category: "politics" },
     { title: "Understanding EVM and VVPAT: How Your Vote is Counted", description: "A comprehensive guide to the Electronic Voting Machine and Voter Verified Paper Audit Trail system used across India in all elections.", url: "https://eci.gov.in", image: "/news/evm.png", source: "ECI", date: now, category: "technology" },
@@ -92,6 +99,8 @@ function getFallbackNews(): Article[] {
     { title: "Women Voter Participation Reaches All-Time High", description: "Election data shows women voter turnout has surpassed male turnout in several states, marking a significant shift in Indian democratic participation.", url: "https://eci.gov.in", image: "/news/women-voters.png", source: "ECI", date: now, category: "politics" },
     { title: "NOTA Votes Analysis: What the Numbers Tell Us", description: "A data-driven look at NOTA voting patterns across constituencies since its introduction in 2013 and its impact on election outcomes.", url: "https://eci.gov.in", image: "/news/counting-center.png", source: "ECI", date: now, category: "technology" },
   ];
+  if (category === "all") return allNews;
+  return allNews.filter(a => a.category.toLowerCase() === category.toLowerCase());
 }
 
 function sanitize(t: string) {

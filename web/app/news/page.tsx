@@ -29,15 +29,16 @@ export default function NewsPage() {
     (async () => {
       setLoading(true);
       try {
-        const res = await fetch("/api/news");
+        const catQuery = activeFilter === "All" ? "all" : activeFilter.toLowerCase();
+        const res = await fetch(`/api/news?category=${catQuery}`);
         const data = await res.json();
         setArticles(data.articles || []);
       } catch { setArticles([]); }
       finally { setLoading(false); }
     })();
-  }, []);
+  }, [activeFilter]);
 
-  const filtered = activeFilter === "All" ? articles : articles.filter((a) => a.category.toLowerCase() === activeFilter.toLowerCase());
+  const filtered = articles;
 
   const formatDate = (d: string) => { try { return new Date(d).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }); } catch { return ""; } };
 
