@@ -8,13 +8,23 @@ async function testChat() {
     const apiKey = apiKeyLine.split("=")[1].trim();
 
     const ai = new GoogleGenAI({ apiKey });
-    const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash-lite",
-      contents: "Respond with 'WORKING' if you receive this.",
-    });
-    console.log("SUCCESS: " + response.text);
+    const models = ["gemini-2.0-flash", "gemini-2.0-flash-lite", "gemini-flash-latest", "gemini-1.5-flash"];
+
+    for (const model of models) {
+      console.log(`Testing model: ${model}...`);
+      try {
+        const response = await ai.models.generateContent({
+          model: model,
+          contents: "Respond with 'WORKING'",
+        });
+        console.log(`SUCCESS for ${model}: ` + response.text);
+        return; // Stop on first success
+      } catch (err) {
+        console.error(`ERROR for ${model}:`, err.message);
+      }
+    }
   } catch (error) {
-    console.error("ERROR:", error.message);
+    console.error("FATAL ERROR:", error.message);
   }
 }
 
