@@ -1,0 +1,13 @@
+# Files ignored by `gcloud` when uploading source for Cloud Build.
+.git
+.gitignore
+.next
+node_modules
+__tests__
+coverage
+*.log
+.env
+.env.local
+.env.*.local
+README.md
+screenshots

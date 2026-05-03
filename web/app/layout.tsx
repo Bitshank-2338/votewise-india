@@ -3,6 +3,7 @@ import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { LanguageProvider } from "@/components/LanguageProvider";
+import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 
 export const metadata: Metadata = {
   title: "VoteWise India — Election Process Assistant",
@@ -25,10 +26,16 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
+        <GoogleAnalytics />
         <LanguageProvider>
           <ThemeProvider>
+            <a href="#main-content" className="skip-link">
+              Skip to main content
+            </a>
             <Navbar />
-            <main className="page">{children}</main>
+            <main id="main-content" className="page" role="main">
+              {children}
+            </main>
           </ThemeProvider>
         </LanguageProvider>
       </body>

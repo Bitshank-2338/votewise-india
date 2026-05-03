@@ -10,8 +10,10 @@ interface RateLimitEntry {
 
 const store = new Map<string, RateLimitEntry>();
 
-// Clean up expired entries every 60 seconds
-setInterval(() => {
+// Clean up expired entries every 60 seconds.
+// `.unref()` lets Node exit even if this interval is still pending — important
+// for test runners and short-lived edge invocations.
+const cleanupTimer = setInterval(() => {
   const now = Date.now();
   for (const [key, entry] of store.entries()) {
     if (now > entry.resetTime) {
@@ -19,6 +21,9 @@ setInterval(() => {
     }
   }
 }, 60_000);
+if (typeof cleanupTimer.unref === "function") {
+  cleanupTimer.unref();
+}
 
 /**
  * Check if a request should be rate limited.
