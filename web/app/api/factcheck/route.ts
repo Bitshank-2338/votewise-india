@@ -4,10 +4,16 @@ import { sanitizeInput } from "@/lib/sanitize";
 
 export const runtime = "edge";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY as string });
-
 export async function POST(req: Request) {
   try {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      return Response.json(
+        { error: "GEMINI_API_KEY is not configured" },
+        { status: 500 }
+      );
+    }
+    const ai = new GoogleGenAI({ apiKey });
     const ip = getClientIP(req.headers);
     const rl = rateLimit(ip, 5, 60000); // Strict limit: 5 fact checks per minute
     if (rl.limited) {

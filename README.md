@@ -48,11 +48,61 @@ The core logic revolves around bridging the information gap for diverse Indian v
 
 ## 🚀 Tech Stack
 
-- **Framework**: Next.js 14 App Router
-- **AI Integration**: Google Gemini (`@google/genai`)
-- **News APIs**: GNews.io and NewsData.io
-- **Styling**: Vanilla CSS with localized fonts
-- **Deployment**: Google Cloud Run
+- **Framework**: Next.js 16 App Router (Server Components + Edge runtime)
+- **Styling**: Vanilla CSS with localized fonts (Google Fonts: Inter, Space Grotesk)
+- **Testing**: Jest + ts-jest (`npm test` runs the full suite)
+
+### 🟦 Google Services Used
+
+VoteWise India is a Google-Cloud–native application. The following Google
+services are integrated end-to-end:
+
+| Service | Purpose | Module |
+|---|---|---|
+| **Google Gemini API** (`gemini-flash-latest`, `gemini-2.5-flash`) | AI chat assistant + fact-checker | [`web/app/api/chat`](web/app/api/chat/route.ts), [`web/app/api/factcheck`](web/app/api/factcheck/route.ts) |
+| **Google Cloud Translation API v2** | Live translation fallback for AI responses | [`web/lib/google/translate.ts`](web/lib/google/translate.ts) |
+| **Google Civic Information API** | Nonpartisan representative lookups | [`web/lib/google/civic.ts`](web/lib/google/civic.ts) |
+| **YouTube Data API v3** | ECI voter-education video search | [`web/lib/google/youtube.ts`](web/lib/google/youtube.ts) |
+| **Google Maps Embed API** | Polling-booth finder | [`web/lib/google/maps.ts`](web/lib/google/maps.ts) |
+| **Google Analytics 4** (gtag.js) | Privacy-respecting page-view + event tracking | [`web/components/GoogleAnalytics.tsx`](web/components/GoogleAnalytics.tsx) |
+| **Google Fonts** | `Inter` + `Space Grotesk` typography | [`web/app/globals.css`](web/app/globals.css) |
+| **Firebase** (optional Web SDK) | Client analytics / future Firestore data | [`web/lib/google/firebase.ts`](web/lib/google/firebase.ts) |
+| **Google Cloud Run** | Serverless container hosting | [`web/Dockerfile`](web/Dockerfile) |
+| **Google Cloud Build** | CI/CD container build + deploy | [`web/cloudbuild.yaml`](web/cloudbuild.yaml) |
+| **Google Artifact Registry** | Container image storage | [`web/cloudbuild.yaml`](web/cloudbuild.yaml) |
+
+All paid-API integrations gracefully fall back to a no-op or static dataset
+when the relevant environment variable is unset, so the app remains fully
+functional with only `GEMINI_API_KEY` configured.
+
+### 🧪 Testing
+
+The Jest suite covers input sanitization, prompt-injection blocking, rate
+limiting, IP extraction, i18n fallbacks across all 14 supported languages,
+Google services URL builders, and Civic / YouTube / Translate fallback
+behaviour:
+
+```bash
+cd web
+npm install
+npm test
+```
+
+### ☁️ Deployment (Google Cloud Run)
+
+```bash
+# Manual one-shot deploy
+gcloud run deploy votewise-india \
+  --source web \
+  --region us-central1 \
+  --allow-unauthenticated
+
+# Or via Cloud Build (recommended)
+gcloud builds submit web --config web/cloudbuild.yaml
+```
+
+The Dockerfile is multi-stage, runs as a non-root user, and listens on
+`PORT=8080` per Cloud Run conventions.
 
 ## 📥 Local Development
 

@@ -1,6 +1,9 @@
 "use client";
 import Link from "next/link";
+import { useState } from "react";
 import { useLang } from "@/components/LanguageProvider";
+import { buildPlaceEmbedUrl, buildBoothSearchUrl } from "@/lib/google/maps";
+import { trackEvent } from "@/lib/google/analytics";
 
 const DOCS = [
   "EPIC (Voter ID Card)", "Aadhaar Card", "Passport", "Driving License",
@@ -11,6 +14,16 @@ const DOCS = [
 
 export default function ToolsPage() {
   const { t } = useLang();
+  const [pin, setPin] = useState("");
+  const [mapQuery, setMapQuery] = useState("polling booth India");
+
+  function lookupBooth(e: React.FormEvent) {
+    e.preventDefault();
+    const cleaned = pin.replace(/[^0-9]/g, "").slice(0, 6);
+    if (cleaned.length < 6) return;
+    setMapQuery(`polling booth ${cleaned} India`);
+    trackEvent("polling_booth_lookup", { pincode: cleaned });
+  }
 
   const tools = [
     { icon: "🔍", title: t.tools_check_reg, desc: t.tools_check_reg_desc, link: "https://electoralsearch.eci.gov.in/", color: "hsla(217,91%,60%,0.12)" },
@@ -53,6 +66,102 @@ export default function ToolsPage() {
           </div>
         ))}
       </div>
+      {/* Google Maps polling-booth finder */}
+      <section
+        aria-labelledby="booth-finder-title"
+        style={{ marginTop: 60, maxWidth: 900, marginInline: "auto" }}
+      >
+        <div className="section-header">
+          <h2 id="booth-finder-title">📍 Polling Booth Finder</h2>
+          <p>
+            Enter your PIN code — we&apos;ll show nearby polling booths via
+            Google Maps.
+          </p>
+          <div className="divider"></div>
+        </div>
+        <form
+          onSubmit={lookupBooth}
+          role="search"
+          aria-label="Polling booth search"
+          style={{
+            display: "flex",
+            gap: 12,
+            justifyContent: "center",
+            marginBottom: 16,
+            flexWrap: "wrap",
+          }}
+        >
+          <label htmlFor="pin-input" className="sr-only">
+            PIN code
+          </label>
+          <input
+            id="pin-input"
+            type="text"
+            inputMode="numeric"
+            maxLength={6}
+            placeholder="Enter 6-digit PIN code"
+            value={pin}
+            onChange={(e) => setPin(e.target.value)}
+            aria-describedby="pin-help"
+            style={{
+              padding: "12px 16px",
+              borderRadius: "var(--radius-md)",
+              border: "1px solid var(--bg-glass-border)",
+              background: "var(--bg-elevated)",
+              color: "var(--text-primary)",
+              minWidth: 240,
+              fontSize: "1rem",
+            }}
+          />
+          <button type="submit" className="btn btn-primary">
+            Find on Map
+          </button>
+        </form>
+        <p id="pin-help" className="sr-only">
+          Six digit Indian postal code
+        </p>
+        <div
+          style={{
+            position: "relative",
+            paddingBottom: "56.25%",
+            height: 0,
+            overflow: "hidden",
+            borderRadius: "var(--radius-md)",
+            border: "1px solid var(--bg-glass-border)",
+          }}
+        >
+          <iframe
+            title="Google Maps polling booth locator"
+            src={buildPlaceEmbedUrl(mapQuery)}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            allowFullScreen
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              border: 0,
+            }}
+          />
+        </div>
+        {pin.length === 6 && (
+          <p style={{ textAlign: "center", marginTop: 12 }}>
+            <a
+              href={buildBoothSearchUrl(pin)}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() =>
+                trackEvent("open_google_maps", { pincode: pin })
+              }
+            >
+              Open full results in Google Maps →
+            </a>
+          </p>
+        )}
+      </section>
+
       <div className="cta-banner" style={{ marginTop: 60 }}>
         <h2>{t.cta_tools_title}</h2>
         <p>{t.cta_tools_sub}</p>
